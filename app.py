@@ -1,16 +1,16 @@
-import os
 import streamlit as st
 import requests
 from PIL import Image
 import base64
+import os
 
 # Azure Custom Vision API credentials
 PREDICTION_KEY = "8f9ae3559303456a9297072314804f24"
 URL_ENDPOINT_IMAGE = "https://brainphoto-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/de6d63d2-71eb-4309-acf3-50779f24bd0d/classify/iterations/Iteration2/image"
 URL_ENDPOINT_URL = "https://brainphoto-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/de6d63d2-71eb-4309-acf3-50779f24bd0d/classify/iterations/Iteration2/url"
 
-# Paths
-image_path = "image/waste.png"
+# Paths and URLs
+image_path = "https://raw.githubusercontent.com/armaf002/CleanCapture/main/image/waste.png"
 
 # Sidebar navigation
 st.sidebar.title("Waste Detection App")
@@ -18,8 +18,8 @@ menu = st.sidebar.radio("Navigate", ["Home", "Waste Upload", "Waste Capture", "W
 
 # Home Page
 if menu == "Home":
-    with open(image_path, "rb") as f:
-        background_image = base64.b64encode(f.read()).decode()
+    response = requests.get(image_path)
+    background_image = base64.b64encode(response.content).decode()
 
     st.markdown(f"""
         <style>
@@ -34,7 +34,7 @@ if menu == "Home":
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }}     
+        }}
         </style>
     """, unsafe_allow_html=True)
     
@@ -204,21 +204,18 @@ elif menu == "Recycling Guidelines":
 elif menu == "Feedback":
     st.title("Feedback")
     st.write("Report any misclassifications or issues.")
+    # st.write("Provide a way for users to report feedback, possibly via email.")
     
     with st.form(key='contact_form'):
         name = st.text_input("Name")
         email = st.text_input("Email")
+        subject = st.text_input("Subject")
         message = st.text_area("Message")
-        submit_button = st.form_submit_button(label='Submit')
+        submit_button = st.form_submit_button(label='Send')
 
         if submit_button:
-            st.write("Thank you for your feedback!")
+            # You can replace this with your email sending logic
+            st.write(f"Message sent by **{name}** with subject **{subject}** successfully")
+            st.success("Thank you for your feedback!")
 
-# Port configuration for Azure App Service
-if __name__ == '__main__':
-    import sys
-    port = int(os.environ.get('PORT', 8000))
-    st._is_running_with_streamlit = True
-    from streamlit.cli import main
-    sys.argv = ['streamlit', 'run', 'app.py', '--server.port', str(port)]
-    sys.exit(main())
+
