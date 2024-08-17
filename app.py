@@ -1,8 +1,8 @@
+import os
 import streamlit as st
 import requests
 from PIL import Image
 import base64
-import os
 
 # Azure Custom Vision API credentials
 PREDICTION_KEY = "8f9ae3559303456a9297072314804f24"
@@ -11,6 +11,9 @@ URL_ENDPOINT_URL = "https://brainphoto-prediction.cognitiveservices.azure.com/cu
 
 # Paths
 image_path = "image/waste.png"
+
+# Set the port based on the environment variable, if available
+PORT = int(os.environ.get('PORT', 8000))
 
 # Sidebar navigation
 st.sidebar.title("Waste Detection App")
@@ -217,5 +220,10 @@ elif menu == "Feedback":
             # You can replace this with your email sending logic
             st.write(f"Message sent by **{name}** with subject **{subject}** successfully")
             st.success("Thank you for your feedback!")
+
+
+# Starting the Streamlit server on the specified port
+if __name__ == '__main__':
+    os.system(f"streamlit run app.py --server.port {PORT} --server.address 0.0.0.0")
 
 
