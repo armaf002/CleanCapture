@@ -12,9 +12,6 @@ URL_ENDPOINT_URL = "https://brainphoto-prediction.cognitiveservices.azure.com/cu
 # Paths
 image_path = "image/waste.png"
 
-# Set the port based on the environment variable, if available
-PORT = int(os.environ.get('PORT', 8000))
-
 # Sidebar navigation
 st.sidebar.title("Waste Detection App")
 menu = st.sidebar.radio("Navigate", ["Home", "Waste Upload", "Waste Capture", "Waste Streaming", "Recycling Guidelines", "Feedback"])
@@ -207,23 +204,21 @@ elif menu == "Recycling Guidelines":
 elif menu == "Feedback":
     st.title("Feedback")
     st.write("Report any misclassifications or issues.")
-    # st.write("Provide a way for users to report feedback, possibly via email.")
     
     with st.form(key='contact_form'):
         name = st.text_input("Name")
         email = st.text_input("Email")
-        subject = st.text_input("Subject")
         message = st.text_area("Message")
-        submit_button = st.form_submit_button(label='Send')
+        submit_button = st.form_submit_button(label='Submit')
 
         if submit_button:
-            # You can replace this with your email sending logic
-            st.write(f"Message sent by **{name}** with subject **{subject}** successfully")
-            st.success("Thank you for your feedback!")
+            st.write("Thank you for your feedback!")
 
-
-# Starting the Streamlit server on the specified port
+# Port configuration for Azure App Service
 if __name__ == '__main__':
-    os.system(f"streamlit run app.py --server.port {PORT} --server.address 0.0.0.0")
-
-
+    import sys
+    port = int(os.environ.get('PORT', 8000))
+    st._is_running_with_streamlit = True
+    from streamlit.cli import main
+    sys.argv = ['streamlit', 'run', 'app.py', '--server.port', str(port)]
+    sys.exit(main())
